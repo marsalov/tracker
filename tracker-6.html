@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Работа</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    background: #f3ece0; color: #2a241c;
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    min-height: 100vh; padding-bottom: 130px;
+  }
+  .wrap { max-width: 480px; margin: 0 auto; }
+  .tabs {
+    display: flex; gap: 8px;
+    padding: 20px 20px 4px;
+  }
+  .tab {
+    flex: 1; padding: 11px 8px;
+    border-radius: 14px; border: 1px solid #e5d8c2;
+    background: transparent; color: #7a6b5a;
+    font-weight: 600; font-size: 14px;
+    cursor: pointer;
+    font-family: Georgia, 'Times New Roman', serif;
+    letter-spacing: -0.01em;
+    transition: all 150ms;
+  }
+  .tab.active {
+    background: #2a241c; color: #f3ece0; border-color: #2a241c;
+  }
+  .report-card {
+    border-radius: 24px; padding: 18px 20px;
+    background: #fbf6ec; border: 1px solid #e5d8c2;
+  }
+  .report-text {
+    white-space: pre-wrap;
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-size: 14px; line-height: 1.55;
+    color: #2a241c; margin-bottom: 14px;
+  }
+  .report-copy {
+    width: 100%; padding: 10px;
+    border-radius: 10px; cursor: pointer;
+    background: transparent; color: #b14a2a;
+    border: 1.5px dashed #e8c5b4;
+    font-weight: 600; font-size: 13px;
+  }
+  .report-copy:active { background: rgba(177, 74, 42, 0.06); }
+  .report-actions {
+    display: flex; gap: 8px; margin-top: 8px;
+  }
+  .report-action-btn {
+    flex: 1; padding: 10px; border-radius: 10px;
+    background: transparent; color: #7a6b5a;
+    border: 1px solid #e5d8c2; cursor: pointer;
+    font-size: 13px; font-weight: 600;
+  }
+  .report-action-btn.danger { color: #b14a2a; border-color: rgba(177, 74, 42, 0.3); }
+  .report-action-btn:active { background: rgba(0,0,0,0.04); }
+  .report-edited-mark {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    padding: 2px 6px; border-radius: 999px;
+    background: #e8c5b4; color: #b14a2a;
+    margin-left: 6px; text-transform: uppercase; letter-spacing: 0.05em;
+    vertical-align: middle;
+  }
+  .display { font-family: Georgia, 'Times New Roman', serif; letter-spacing: -0.02em; }
+  .header { padding: 36px 20px 12px; }
+  .h-row { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; }
+  h1 { font-size: 34px; font-weight: 500; }
+  .today-btn {
+    font-size: 12px; font-weight: 600; padding: 6px 12px;
+    border-radius: 999px; background: #e8c5b4; color: #b14a2a;
+    border: none; cursor: pointer;
+  }
+  .nav-row { display: flex; align-items: center; justify-content: space-between; }
+  .nav-row .range { font-size: 16px; color: #7a6b5a; font-style: italic; }
+  .nav-btn {
+    background: transparent; border: none; color: #7a6b5a;
+    padding: 8px; font-size: 22px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .earnings {
+    margin: 16px 20px 18px;
+    background: #2a241c; color: #f3ece0;
+    border-radius: 24px; padding: 20px 22px;
+    box-shadow: 0 14px 36px -16px rgba(42,36,28,0.5);
+  }
+  .earnings-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; font-weight: 700; opacity: 0.6; }
+  .earnings-amount { font-size: 38px; font-weight: 600; margin-top: 4px; line-height: 1.1; }
+  .earnings-meta { font-size: 13px; opacity: 0.7; margin-top: 6px; }
+  .earnings-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding-top: 12px; margin-top: 12px;
+    border-top: 1px solid rgba(243,236,224,0.15);
+  }
+  .earnings-row + .earnings-row { border-top: none; padding-top: 6px; margin-top: 0; }
+  .earnings-row-label { font-size: 13px; opacity: 0.7; }
+  .earnings-row-amount { font-size: 15px; font-weight: 600; }
+  .earnings-row.debt { padding-top: 12px; margin-top: 12px; border-top: 1px solid rgba(243,236,224,0.15); }
+  .earnings-row.debt .earnings-row-label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .earnings-row.debt .pencil { opacity: 0.5; font-size: 11px; }
+
+  .tasks-list { padding: 0 20px; display: flex; flex-direction: column; gap: 12px; }
+
+  .task-card {
+    border-radius: 24px; padding: 16px;
+    background: #fbf6ec; border: 1px solid #e5d8c2;
+  }
+  .task-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .task-title-wrap { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1; }
+  .task-icon {
+    font-size: 18px; flex-shrink: 0;
+    width: 36px; height: 36px; border-radius: 999px;
+    display: flex; align-items: center; justify-content: center;
+    background: #e8c5b4; color: #b14a2a;
+  }
+  .task-info { display: flex; flex-direction: column; min-width: 0; }
+  .task-name {
+    font-size: 18px; font-weight: 500;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .task-rate { font-size: 12px; color: #7a6b5a; }
+  .delete-btn {
+    background: transparent; border: none; color: #7a6b5a;
+    cursor: pointer; padding: 8px; margin-right: -4px; font-size: 16px;
+  }
+  .day-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .day-cell {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 6px 0; border-radius: 12px; cursor: pointer;
+    background: transparent; border: none;
+  }
+  .day-cell.today { background: rgba(177, 74, 42, 0.06); }
+  .day-date {
+    font-size: 15px; font-weight: 700; color: #2a241c;
+    line-height: 1; margin-bottom: 2px;
+  }
+  .day-cell.today .day-date { color: #b14a2a; }
+  .day-label {
+    font-size: 9px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;
+    margin-bottom: 6px; color: #7a6b5a;
+  }
+  .day-cell.today .day-label { color: #b14a2a; }
+  .day-circle {
+    width: 28px; height: 28px; border-radius: 999px;
+    display: flex; align-items: center; justify-content: center;
+    background: transparent;
+    border: 1.5px solid #e5d8c2;
+    transition: all 200ms;
+  }
+  .day-cell.today .day-circle { border-color: #b14a2a; }
+  .day-circle.done {
+    background: #b14a2a;
+    border: none;
+    animation: pop 260ms cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes pop { 0% { transform: scale(0.6); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
+  .day-circle svg { display: none; }
+  .day-circle.done svg { display: block; }
+  .task-meta {
+    font-size: 13px; margin-top: 12px; color: #2a241c;
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .task-meta .earned { font-weight: 600; color: #b14a2a; }
+
+  .extras-card {
+    border-radius: 24px; padding: 16px;
+    background: #fbf6ec; border: 1px solid #e5d8c2;
+  }
+  .extras-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .extras-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+  .extra-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 12px; border-radius: 12px; background: rgba(177, 74, 42, 0.05);
+  }
+  .extra-info { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+  .extra-date { font-size: 12px; color: #7a6b5a; text-transform: capitalize; }
+  .extra-desc { font-size: 14px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .extra-amount { font-weight: 600; color: #b14a2a; margin-right: 8px; white-space: nowrap; }
+  .extra-del { background: transparent; border: none; color: #7a6b5a; cursor: pointer; padding: 4px; font-size: 14px; }
+  .extras-empty { font-size: 13px; color: #7a6b5a; text-align: center; padding: 12px 0; }
+  .extras-add {
+    width: 100%; padding: 12px; border-radius: 12px;
+    background: transparent; color: #b14a2a; border: 1.5px dashed #e8c5b4;
+    cursor: pointer; font-weight: 600; font-size: 14px;
+  }
+  .extras-add:active { background: rgba(177, 74, 42, 0.06); }
+
+  .add-place {
+    margin: 4px 20px 0;
+    padding: 12px; border-radius: 12px;
+    background: transparent; color: #7a6b5a; border: 1px dashed #d4c5ad;
+    cursor: pointer; font-size: 13px; font-weight: 500;
+  }
+
+  .report-btn {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    padding: 14px 28px; border-radius: 999px; font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+    background: #2a241c; color: #f3ece0; border: none; cursor: pointer;
+    box-shadow: 0 14px 36px -10px rgba(42,36,28,0.5); font-size: 15px;
+    z-index: 10;
+  }
+  .report-btn:active { transform: translateX(-50%) scale(0.96); }
+
+  .toast {
+    position: fixed; bottom: 92px; left: 50%; transform: translateX(-50%);
+    background: #2a241c; color: #f3ece0; padding: 10px 18px;
+    border-radius: 999px; font-size: 13px; font-weight: 500;
+    opacity: 0; transition: opacity 200ms; pointer-events: none;
+    z-index: 60; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; }
+
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 50;
+    background: rgba(42,36,28,0.45);
+    display: none;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-overlay.bottom { align-items: flex-end; justify-content: center; }
+  .modal-overlay.center { align-items: center; justify-content: center; padding: 0 24px; }
+  .modal-sheet {
+    width: 100%; max-width: 480px;
+    border-top-left-radius: 24px; border-top-right-radius: 24px;
+    padding: 24px 24px 40px; background: #f3ece0;
+    animation: slideUp 280ms cubic-bezier(.2,.8,.2,1);
+    max-height: 92vh; overflow-y: auto;
+  }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .modal-card {
+    width: 100%; max-width: 380px; border-radius: 24px; padding: 24px; background: #f3ece0;
+  }
+  .modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .modal-head h2 { font-size: 22px; font-weight: 500; }
+  .close-btn { background: transparent; border: none; color: #7a6b5a; padding: 8px; margin-right: -8px; cursor: pointer; font-size: 20px; }
+  .field-group { margin-bottom: 16px; }
+  .field-label {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em;
+    font-weight: 700; display: block; margin-bottom: 8px; color: #7a6b5a;
+  }
+  .field-input {
+    width: 100%; padding: 14px 16px; border-radius: 12px; outline: none;
+    font-size: 17px; box-sizing: border-box;
+    background: #fbf6ec; border: 1px solid #e5d8c2; color: #2a241c;
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+  .icon-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+  .icon-pick {
+    height: 44px; border-radius: 12px; cursor: pointer;
+    font-size: 18px; background: #fbf6ec; color: #2a241c;
+    border: 1px solid #e5d8c2; transition: all 150ms;
+  }
+  .icon-pick.active { background: #b14a2a; color: #f3ece0; border-color: #b14a2a; }
+  .submit-btn {
+    width: 100%; padding: 16px; border-radius: 12px;
+    font-weight: 600; font-size: 16px; border: none;
+    cursor: pointer; transition: all 150ms; margin-top: 8px;
+    background: #b14a2a; color: #fff;
+  }
+  .submit-btn:disabled { background: #e5d8c2; color: #7a6b5a; cursor: not-allowed; }
+  .confirm-title { font-size: 20px; margin-bottom: 8px; font-family: Georgia, serif; }
+  .confirm-text { font-size: 14px; margin-bottom: 20px; color: #7a6b5a; }
+  .btn-row { display: flex; gap: 8px; }
+  .btn-cancel {
+    flex: 1; padding: 12px; border-radius: 12px; font-weight: 600;
+    background: #fbf6ec; color: #2a241c; border: 1px solid #e5d8c2; cursor: pointer; font-size: 15px;
+  }
+  .btn-confirm {
+    flex: 1; padding: 12px; border-radius: 12px; font-weight: 600;
+    background: #b14a2a; color: #fff; border: none; cursor: pointer; font-size: 15px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="tabs">
+    <button class="tab active" id="tabMain">Неделя</button>
+    <button class="tab" id="tabReports">Отчеты</button>
+  </div>
+
+  <div id="viewMain">
+  <div class="header">
+    <div class="h-row">
+      <h1 class="display">Работа</h1>
+      <button class="today-btn" id="todayBtn" style="display:none">К сегодня</button>
+    </div>
+    <div class="nav-row">
+      <button class="nav-btn" id="prevBtn">‹</button>
+      <div class="range display" id="rangeLabel"></div>
+      <button class="nav-btn" id="nextBtn">›</button>
+    </div>
+  </div>
+
+  <div class="earnings" id="earningsBlock">
+    <div class="earnings-label">Заработано за неделю</div>
+    <div class="earnings-amount display" id="weekAmount">0 ₽</div>
+    <div class="earnings-meta" id="weekMeta">0 смен</div>
+    <div class="earnings-row">
+      <span class="earnings-row-label">В счет долга (50%)</span>
+      <span class="earnings-row-amount" id="debtPortion">0 ₽</span>
+    </div>
+    <div class="earnings-row">
+      <span class="earnings-row-label">К выплате</span>
+      <span class="earnings-row-amount" id="payout">0 ₽</span>
+    </div>
+    <div class="earnings-row debt">
+      <span class="earnings-row-label" id="debtEdit">Остаток долга <span class="pencil">✎</span></span>
+      <span class="earnings-row-amount" id="debtRemaining">0 ₽</span>
+    </div>
+  </div>
+
+  <div class="tasks-list" id="tasksList"></div>
+  <button class="add-place" id="addBtn">+ Добавить место работы</button>
+  </div>
+
+  <div id="viewReports" style="display:none">
+    <div class="tasks-list" id="reportsList" style="margin-top: 16px;"></div>
+  </div>
+</div>
+
+<button class="report-btn" id="reportBtn">📋 Скопировать отчет</button>
+<div class="toast" id="toast"></div>
+
+<!-- Add place modal -->
+<div class="modal-overlay bottom" id="addModal">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <h2 class="display">Новое место</h2>
+      <button class="close-btn" id="closeAdd">✕</button>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Название</label>
+      <input type="text" class="field-input" id="newName" placeholder="Например, Каменская" />
+    </div>
+    <div class="field-group">
+      <label class="field-label">Оплата за день (₽)</label>
+      <input type="number" class="field-input" id="newRate" placeholder="600" inputmode="numeric" />
+    </div>
+    <div class="field-group">
+      <label class="field-label">Значок</label>
+      <div class="icon-grid" id="iconGrid"></div>
+    </div>
+    <button class="submit-btn" id="submitAdd" disabled>Добавить</button>
+  </div>
+</div>
+
+<!-- Add extra work modal -->
+<div class="modal-overlay bottom" id="extraModal">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <h2 class="display">Доп работа</h2>
+      <button class="close-btn" id="closeExtra">✕</button>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Сумма (₽)</label>
+      <input type="number" class="field-input" id="extraAmount" placeholder="0" inputmode="numeric" autofocus />
+    </div>
+    <div class="field-group">
+      <label class="field-label">Описание (необязательно)</label>
+      <input type="text" class="field-input" id="extraDesc" placeholder="Что за работа?" />
+    </div>
+    <button class="submit-btn" id="submitExtra" disabled>Добавить</button>
+  </div>
+</div>
+
+<!-- Debt modal -->
+<div class="modal-overlay bottom" id="debtModal">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <h2 class="display">Размер долга</h2>
+      <button class="close-btn" id="closeDebt">✕</button>
+    </div>
+    <p style="font-size:13px;color:#7a6b5a;margin-bottom:16px;line-height:1.5;">
+      Это начальная сумма долга. Из всех выплат автоматически вычитается 50% — остаток будет уменьшаться.
+    </p>
+    <div class="field-group">
+      <label class="field-label">Сумма долга (₽)</label>
+      <input type="number" class="field-input" id="debtInput" placeholder="0" inputmode="numeric" />
+    </div>
+    <button class="submit-btn" id="submitDebt">Сохранить</button>
+  </div>
+</div>
+
+<!-- Edit report modal -->
+<div class="modal-overlay bottom" id="editReportModal">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <h2 class="display">Изменить отчет</h2>
+      <button class="close-btn" id="closeEditReport">✕</button>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Текст отчета</label>
+      <textarea class="field-input" id="editReportText" rows="14" style="font-family: ui-monospace, 'SF Mono', Consolas, monospace; font-size: 13px; line-height: 1.5; resize: vertical; min-height: 240px;"></textarea>
+    </div>
+    <button class="btn-cancel" id="resetReportText" style="width: 100%; margin-bottom: 10px;">Восстановить из данных</button>
+    <button class="submit-btn" id="saveEditReport">Сохранить</button>
+  </div>
+</div>
+
+<!-- Confirm modal -->
+<div class="modal-overlay center" id="confirmModal">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <div class="confirm-title" id="confirmTitle">Удалить?</div>
+    <div class="confirm-text" id="confirmText">Это действие нельзя отменить.</div>
+    <div class="btn-row">
+      <button class="btn-cancel" id="cancelDel">Отмена</button>
+      <button class="btn-confirm" id="confirmDel">Удалить</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
+
+<script>
+  const DAYS = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+  const ICONS = ['💼','💰','🏠','🌍','⚒','🔨','📍','★','✦','●','▲','✓'];
+  const MONTHS_SHORT = ['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+  const MONTHS_GEN = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+  const STORAGE_KEY = 'worktracker_v2';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDQoJyaW66z0cD62nnzFUpIfwFruraIZPw",
+    authDomain: "tracker-ec561.firebaseapp.com",
+    databaseURL: "https://tracker-ec561-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "tracker-ec561",
+    storageBucket: "tracker-ec561.firebasestorage.app",
+    messagingSenderId: "569952524199",
+    appId: "1:569952524199:web:6ca6b86dc81b1550698882"
+  };
+  let dataRef = null;
+  let isApplyingRemote = false;
+
+  const DEFAULTS = {
+    tasks: [
+      { id: 'kamenskaya', name: 'Каменская', icon: '🏠', rate: 600 },
+      { id: 'europa', name: 'Европа', icon: '🌍', rate: 600 }
+    ],
+    completions: {},
+    extras: [],
+    initialDebt: 0,
+    reports: []
+  };
+
+  let data = JSON.parse(JSON.stringify(DEFAULTS));
+  let storageReady = false;
+  let currentMonday = getMonday(new Date());
+  let selectedIcon = ICONS[0];
+  let pendingAction = null; // { type: 'task'|'extra', id }
+
+  function getMonday(date) {
+    const d = new Date(date);
+    d.setHours(0,0,0,0);
+    const day = d.getDay() || 7;
+    d.setDate(d.getDate() - day + 1);
+    return d;
+  }
+  function dateKey(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth()+1).padStart(2,'0');
+    const d = String(date.getDate()).padStart(2,'0');
+    return y+'-'+m+'-'+d;
+  }
+  function todayIdx() {
+    const d = new Date().getDay();
+    return d === 0 ? 6 : d - 1;
+  }
+  function formatRangeShort(monday) {
+    const sun = new Date(monday); sun.setDate(monday.getDate()+6);
+    return monday.getDate()+' '+MONTHS_SHORT[monday.getMonth()]+' – '+sun.getDate()+' '+MONTHS_SHORT[sun.getMonth()];
+  }
+  function formatRangeFull(monday) {
+    // Report range: from PREVIOUS Sunday to THIS week's Sunday (Sun-Sun bookend)
+    const prevSun = new Date(monday); prevSun.setDate(monday.getDate() - 1);
+    const sun = new Date(monday); sun.setDate(monday.getDate() + 6);
+    if (prevSun.getMonth() === sun.getMonth()) {
+      return 'с '+prevSun.getDate()+' по '+sun.getDate()+' '+MONTHS_GEN[sun.getMonth()];
+    }
+    return 'с '+prevSun.getDate()+' '+MONTHS_GEN[prevSun.getMonth()]+' по '+sun.getDate()+' '+MONTHS_GEN[sun.getMonth()];
+  }
+  function shiftWord(n) {
+    const m10 = n % 10, m100 = n % 100;
+    if (m10 === 1 && m100 !== 11) return 'смена';
+    if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return 'смены';
+    return 'смен';
+  }
+  function fmtRub(n) {
+    return Math.round(n).toLocaleString('ru-RU').replace(/,/g, ' ') + ' ₽';
+  }
+  function formatExtraDate(isoDate) {
+    const d = new Date(isoDate + 'T00:00:00');
+    const dayNames = ['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
+    return dayNames[d.getDay()] + ', ' + d.getDate() + ' ' + MONTHS_GEN[d.getMonth()];
+  }
+
+  function applyRaw(raw) {
+    try {
+      const loaded = JSON.parse(raw);
+      if (loaded.tasks) data.tasks = loaded.tasks;
+      if (loaded.completions) data.completions = loaded.completions;
+      if (loaded.extras) data.extras = loaded.extras;
+      if (typeof loaded.initialDebt === 'number') data.initialDebt = loaded.initialDebt;
+      if (loaded.reports) data.reports = loaded.reports;
+      return true;
+    } catch(e) { return false; }
+  }
+
+  async function loadData() {
+    // First: load from localStorage (instant, works offline)
+    try {
+      if (window.localStorage) {
+        const v = window.localStorage.getItem(STORAGE_KEY);
+        if (v) applyRaw(v);
+      }
+    } catch(e) {}
+    storageReady = true;
+    render();
+    autoArchive();
+
+    // Then: connect to Firebase for cross-device sync
+    try {
+      if (typeof firebase === 'undefined') return;
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.database();
+      dataRef = db.ref('tracker/data');
+
+      dataRef.on('value', snap => {
+        const v = snap.val();
+        if (typeof v === 'string') {
+          isApplyingRemote = true;
+          if (applyRaw(v)) {
+            try { window.localStorage.setItem(STORAGE_KEY, v); } catch(e) {}
+            render();
+          }
+          isApplyingRemote = false;
+          autoArchive();
+        } else if (v === null) {
+          // Firebase is empty for the first time — push current local data
+          if (data.tasks && data.tasks.length > 0) {
+            try { dataRef.set(JSON.stringify(data)); } catch(e) {}
+          }
+        }
+      }, err => {
+        console.error('Firebase subscription error:', err);
+      });
+    } catch(e) {
+      console.error('Firebase init failed:', e);
+    }
+  }
+
+  async function saveData() {
+    if (!storageReady) return;
+    if (isApplyingRemote) return;
+    const json = JSON.stringify(data);
+    try {
+      if (window.localStorage) window.localStorage.setItem(STORAGE_KEY, json);
+    } catch(e) {}
+    if (dataRef) {
+      try { await dataRef.set(json); } catch(e) {}
+    }
+  }
+
+  function calcTaskWeek(taskId, weekKey) {
+    const task = data.tasks.find(t => t.id === taskId);
+    if (!task) return { days: 0, earned: 0 };
+    const tc = (data.completions[weekKey] || {})[taskId] || {};
+    const days = Object.values(tc).filter(Boolean).length;
+    return { days, earned: days * (task.rate || 0) };
+  }
+
+  function extrasInWeek(weekKey) {
+    const monday = new Date(weekKey + 'T00:00:00');
+    const sunday = new Date(monday); sunday.setDate(monday.getDate() + 6);
+    const startMs = monday.getTime();
+    const endMs = sunday.getTime() + 24*60*60*1000 - 1;
+    return data.extras.filter(e => {
+      const t = new Date(e.date + 'T00:00:00').getTime();
+      return t >= startMs && t <= endMs;
+    });
+  }
+
+  function calcWeekTotals(weekKey) {
+    let regularDays = 0, regularEarned = 0;
+    data.tasks.forEach(t => {
+      const r = calcTaskWeek(t.id, weekKey);
+      regularDays += r.days; regularEarned += r.earned;
+    });
+    const extras = extrasInWeek(weekKey);
+    const extraEarned = extras.reduce((s,e) => s + (e.amount||0), 0);
+    const total = regularEarned + extraEarned;
+    return {
+      regularDays,
+      regularEarned,
+      extraCount: extras.length,
+      extraEarned,
+      totalDays: regularDays + extras.length,
+      total
+    };
+  }
+
+  function calcDebtState(uptoWeekKey) {
+    // Returns { debtAtStart, debtPaymentThisWeek, debtAtEnd }
+    const sortedWeeks = Object.keys(data.completions).concat(
+      data.extras.map(e => dateKey(getMonday(new Date(e.date + 'T00:00:00'))))
+    );
+    const allWeeks = [...new Set(sortedWeeks)].sort();
+
+    let debt = data.initialDebt || 0;
+    let debtAtStart = debt;
+    let debtPaymentThisWeek = 0;
+
+    for (const wk of allWeeks) {
+      const w = calcWeekTotals(wk);
+      const payment = w.total / 2;
+      if (wk === uptoWeekKey) {
+        debtAtStart = debt;
+        debtPaymentThisWeek = payment;
+      }
+      debt = Math.max(0, debt - payment);
+      if (wk === uptoWeekKey) {
+        return { debtAtStart, debtPaymentThisWeek, debtAtEnd: debt };
+      }
+    }
+    // Week not found in history (no earnings yet) — use current debt level
+    return { debtAtStart: debt, debtPaymentThisWeek: 0, debtAtEnd: debt };
+  }
+
+  function render() {
+    const wKey = dateKey(currentMonday);
+    const todayKey = dateKey(getMonday(new Date()));
+    const isThisWeek = wKey === todayKey;
+    const tIdx = todayIdx();
+
+    document.getElementById('rangeLabel').textContent = formatRangeShort(currentMonday);
+    document.getElementById('todayBtn').style.display = isThisWeek ? 'none' : 'block';
+
+    const w = calcWeekTotals(wKey);
+    const debtState = calcDebtState(wKey);
+    const debtPortion = w.total / 2;
+    const payout = w.total - debtPortion;
+
+    document.getElementById('weekAmount').textContent = fmtRub(w.total);
+    document.getElementById('weekMeta').textContent = w.totalDays + ' ' + shiftWord(w.totalDays);
+    document.getElementById('debtPortion').textContent = fmtRub(debtPortion);
+    document.getElementById('payout').textContent = fmtRub(payout);
+    document.getElementById('debtRemaining').textContent = fmtRub(debtState.debtAtEnd);
+
+    const list = document.getElementById('tasksList');
+    list.innerHTML = '';
+
+    data.tasks.forEach(task => {
+      const tc = (data.completions[wKey] || {})[task.id] || {};
+      const r = calcTaskWeek(task.id, wKey);
+
+      const card = document.createElement('div');
+      card.className = 'task-card';
+
+      const head = document.createElement('div');
+      head.className = 'task-head';
+      const tw = document.createElement('div');
+      tw.className = 'task-title-wrap';
+      const ic = document.createElement('span');
+      ic.className = 'task-icon';
+      ic.textContent = task.icon;
+      const info = document.createElement('div');
+      info.className = 'task-info';
+      const nm = document.createElement('span');
+      nm.className = 'task-name display';
+      nm.textContent = task.name;
+      const rt = document.createElement('span');
+      rt.className = 'task-rate';
+      rt.textContent = fmtRub(task.rate || 0) + ' / день';
+      info.appendChild(nm); info.appendChild(rt);
+      tw.appendChild(ic); tw.appendChild(info);
+      const del = document.createElement('button');
+      del.className = 'delete-btn';
+      del.textContent = '🗑';
+      del.onclick = () => askDelete('task', task.id, 'Удалить место работы?', 'История смен по нему будет удалена.');
+      head.appendChild(tw); head.appendChild(del);
+
+      const grid = document.createElement('div');
+      grid.className = 'day-grid';
+      DAYS.forEach((label, i) => {
+        const isToday = isThisWeek && i === tIdx;
+        const isDone = !!tc[i];
+        const cellDate = new Date(currentMonday);
+        cellDate.setDate(currentMonday.getDate() + i);
+        const cell = document.createElement('button');
+        cell.className = 'day-cell' + (isToday ? ' today' : '');
+        const dateEl = document.createElement('span');
+        dateEl.className = 'day-date';
+        dateEl.textContent = cellDate.getDate();
+        const lab = document.createElement('span');
+        lab.className = 'day-label';
+        lab.textContent = label;
+        const circle = document.createElement('div');
+        circle.className = 'day-circle' + (isDone ? ' done' : '');
+        circle.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7.5L6 10L11 4" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        cell.appendChild(dateEl); cell.appendChild(lab); cell.appendChild(circle);
+        cell.onclick = () => toggle(task.id, i);
+        grid.appendChild(cell);
+      });
+
+      const meta = document.createElement('div');
+      meta.className = 'task-meta';
+      const left = document.createElement('span');
+      left.textContent = r.days + ' × ' + (task.rate || 0) + ' ₽';
+      const right = document.createElement('span');
+      right.className = 'earned';
+      right.textContent = fmtRub(r.earned);
+      meta.appendChild(left); meta.appendChild(right);
+
+      card.appendChild(head);
+      card.appendChild(grid);
+      card.appendChild(meta);
+      list.appendChild(card);
+    });
+
+    // Extras card
+    const extrasCard = document.createElement('div');
+    extrasCard.className = 'extras-card';
+    const eHead = document.createElement('div');
+    eHead.className = 'extras-head';
+    const eTitle = document.createElement('div');
+    eTitle.className = 'task-title-wrap';
+    const eIc = document.createElement('span');
+    eIc.className = 'task-icon';
+    eIc.textContent = '⚒';
+    const eInfo = document.createElement('div');
+    eInfo.className = 'task-info';
+    const eNm = document.createElement('span');
+    eNm.className = 'task-name display';
+    eNm.textContent = 'Доп работы';
+    const eRt = document.createElement('span');
+    eRt.className = 'task-rate';
+    eRt.textContent = w.extraCount + ' ' + shiftWord(w.extraCount) + ' за неделю';
+    eInfo.appendChild(eNm); eInfo.appendChild(eRt);
+    eTitle.appendChild(eIc); eTitle.appendChild(eInfo);
+    const eAmt = document.createElement('span');
+    eAmt.className = 'earned';
+    eAmt.style.fontWeight = '600';
+    eAmt.style.color = '#b14a2a';
+    eAmt.textContent = fmtRub(w.extraEarned);
+    eHead.appendChild(eTitle); eHead.appendChild(eAmt);
+    extrasCard.appendChild(eHead);
+
+    const eList = document.createElement('div');
+    eList.className = 'extras-list';
+    const weekExtras = extrasInWeek(wKey);
+    if (weekExtras.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'extras-empty';
+      empty.textContent = 'На этой неделе доп работ нет';
+      eList.appendChild(empty);
+    } else {
+      weekExtras.sort((a,b) => a.date.localeCompare(b.date)).forEach(ex => {
+        const row = document.createElement('div');
+        row.className = 'extra-row';
+        const ifo = document.createElement('div');
+        ifo.className = 'extra-info';
+        const dt = document.createElement('span');
+        dt.className = 'extra-date';
+        dt.textContent = formatExtraDate(ex.date);
+        ifo.appendChild(dt);
+        if (ex.description) {
+          const desc = document.createElement('span');
+          desc.className = 'extra-desc';
+          desc.textContent = ex.description;
+          ifo.appendChild(desc);
+        }
+        const am = document.createElement('span');
+        am.className = 'extra-amount';
+        am.textContent = fmtRub(ex.amount);
+        const xb = document.createElement('button');
+        xb.className = 'extra-del';
+        xb.textContent = '✕';
+        xb.onclick = () => askDelete('extra', ex.id, 'Удалить запись?', 'Доп работа на ' + fmtRub(ex.amount) + ' будет удалена.');
+        row.appendChild(ifo); row.appendChild(am); row.appendChild(xb);
+        eList.appendChild(row);
+      });
+    }
+    extrasCard.appendChild(eList);
+
+    const addBtn = document.createElement('button');
+    addBtn.className = 'extras-add';
+    addBtn.textContent = '+ Добавить доп работу';
+    addBtn.onclick = openExtraModal;
+    extrasCard.appendChild(addBtn);
+    list.appendChild(extrasCard);
+  }
+
+  function toggle(taskId, dayIdx) {
+    const wKey = dateKey(currentMonday);
+    if (!data.completions[wKey]) data.completions[wKey] = {};
+    if (!data.completions[wKey][taskId]) data.completions[wKey][taskId] = {};
+    data.completions[wKey][taskId][dayIdx] = !data.completions[wKey][taskId][dayIdx];
+    saveData();
+    render();
+  }
+
+  function addTask() {
+    const name = document.getElementById('newName').value.trim();
+    if (!name) return;
+    const rateStr = document.getElementById('newRate').value.trim();
+    const rate = parseInt(rateStr, 10) || 600;
+    data.tasks.push({ id: 't_'+Date.now(), name, icon: selectedIcon, rate });
+    document.getElementById('newName').value = '';
+    document.getElementById('newRate').value = '';
+    selectedIcon = ICONS[0];
+    renderIconGrid();
+    updateAddSubmit();
+    document.getElementById('addModal').classList.remove('show');
+    saveData();
+    render();
+  }
+
+  function addExtra() {
+    const amountStr = document.getElementById('extraAmount').value.trim();
+    const amount = parseInt(amountStr, 10);
+    if (!amount || amount <= 0) return;
+    const desc = document.getElementById('extraDesc').value.trim();
+    const today = dateKey(new Date());
+    data.extras.push({ id: 'e_'+Date.now(), date: today, amount, description: desc });
+    document.getElementById('extraAmount').value = '';
+    document.getElementById('extraDesc').value = '';
+    updateExtraSubmit();
+    document.getElementById('extraModal').classList.remove('show');
+    saveData();
+    render();
+  }
+
+  function removeTask(id) {
+    data.tasks = data.tasks.filter(t => t.id !== id);
+    Object.keys(data.completions).forEach(wk => {
+      if (data.completions[wk][id]) delete data.completions[wk][id];
+    });
+  }
+  function removeExtra(id) {
+    data.extras = data.extras.filter(e => e.id !== id);
+  }
+
+  function askDelete(type, id, title, text) {
+    pendingAction = { type, id };
+    document.getElementById('confirmTitle').textContent = title;
+    document.getElementById('confirmText').textContent = text;
+    document.getElementById('confirmModal').classList.add('show');
+  }
+
+  function renderIconGrid() {
+    const grid = document.getElementById('iconGrid');
+    grid.innerHTML = '';
+    ICONS.forEach(ic => {
+      const btn = document.createElement('button');
+      btn.className = 'icon-pick' + (selectedIcon === ic ? ' active' : '');
+      btn.textContent = ic;
+      btn.onclick = () => { selectedIcon = ic; renderIconGrid(); };
+      grid.appendChild(btn);
+    });
+  }
+  function updateAddSubmit() {
+    const has = document.getElementById('newName').value.trim().length > 0;
+    document.getElementById('submitAdd').disabled = !has;
+  }
+  function updateExtraSubmit() {
+    const v = parseInt(document.getElementById('extraAmount').value, 10);
+    document.getElementById('submitExtra').disabled = !v || v <= 0;
+  }
+
+  function openExtraModal() {
+    document.getElementById('extraModal').classList.add('show');
+    setTimeout(() => document.getElementById('extraAmount').focus(), 100);
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  function buildReport() {
+    return buildReportFor(currentMonday);
+  }
+
+  function buildReportFor(weekStart) {
+    const wKey = dateKey(weekStart);
+    const range = formatRangeFull(weekStart);
+    const w = calcWeekTotals(wKey);
+    const debtState = calcDebtState(wKey);
+    const debtPortion = w.total / 2;
+    const payout = w.total - debtPortion;
+
+    const lines = [];
+    lines.push('Отчет ' + range);
+    data.tasks.forEach(t => {
+      const r = calcTaskWeek(t.id, wKey);
+      lines.push(t.name + ': ' + r.days + ' ' + shiftWord(r.days));
+    });
+    lines.push('ДопРаботы: ' + w.extraCount + ' ' + shiftWord(w.extraCount));
+    lines.push('Итого: ' + fmtRub(w.total));
+    lines.push('В счет погашения долга: ' + fmtRub(debtPortion));
+    lines.push('К выплате: ' + fmtRub(payout));
+    lines.push('Остаток: ' + fmtRub(debtState.debtAtEnd));
+    lines.push('');
+    lines.push('#отчетНеделяМатвей');
+    return lines.join('\n');
+  }
+
+  function autoArchive() {
+    if (!storageReady) return;
+    if (!data.reports) data.reports = [];
+    const todayMonKey = dateKey(getMonday(new Date()));
+    const weekKeysWithData = new Set(Object.keys(data.completions || {}));
+    (data.extras || []).forEach(e => {
+      weekKeysWithData.add(dateKey(getMonday(new Date(e.date + 'T00:00:00'))));
+    });
+    const archivedKeys = new Set(data.reports.map(r => r.weekKey));
+    let changed = false;
+    weekKeysWithData.forEach(wk => {
+      if (wk >= todayMonKey) return;
+      if (archivedKeys.has(wk)) return;
+      const w = calcWeekTotals(wk);
+      if (w.total === 0) return;
+      const monday = new Date(wk + 'T00:00:00');
+      const debtState = calcDebtState(wk);
+      data.reports.push({
+        weekKey: wk,
+        text: buildReportFor(monday),
+        total: w.total,
+        totalDays: w.totalDays,
+        debtPayment: w.total / 2,
+        payout: w.total / 2,
+        debtAtEnd: debtState.debtAtEnd,
+        archivedAt: new Date().toISOString()
+      });
+      changed = true;
+    });
+    if (changed) {
+      data.reports.sort((a, b) => b.weekKey.localeCompare(a.weekKey));
+      saveData();
+    }
+  }
+  document.getElementById('prevBtn').onclick = () => {
+    const d = new Date(currentMonday); d.setDate(d.getDate()-7);
+    currentMonday = d; render();
+  };
+  document.getElementById('nextBtn').onclick = () => {
+    const d = new Date(currentMonday); d.setDate(d.getDate()+7);
+    currentMonday = d; render();
+  };
+  document.getElementById('todayBtn').onclick = () => {
+    currentMonday = getMonday(new Date()); render();
+  };
+  document.getElementById('addBtn').onclick = () => {
+    document.getElementById('addModal').classList.add('show');
+    setTimeout(() => document.getElementById('newName').focus(), 100);
+  };
+  document.getElementById('closeAdd').onclick = () => document.getElementById('addModal').classList.remove('show');
+  document.getElementById('addModal').onclick = () => document.getElementById('addModal').classList.remove('show');
+  document.getElementById('submitAdd').onclick = addTask;
+  document.getElementById('newName').oninput = updateAddSubmit;
+
+  document.getElementById('closeExtra').onclick = () => document.getElementById('extraModal').classList.remove('show');
+  document.getElementById('extraModal').onclick = () => document.getElementById('extraModal').classList.remove('show');
+  document.getElementById('submitExtra').onclick = addExtra;
+  document.getElementById('extraAmount').oninput = updateExtraSubmit;
+  document.getElementById('extraAmount').onkeydown = (e) => { if (e.key === 'Enter') document.getElementById('extraDesc').focus(); };
+  document.getElementById('extraDesc').onkeydown = (e) => { if (e.key === 'Enter') addExtra(); };
+
+  document.getElementById('debtEdit').onclick = () => {
+    document.getElementById('debtInput').value = data.initialDebt || '';
+    document.getElementById('debtModal').classList.add('show');
+    setTimeout(() => document.getElementById('debtInput').focus(), 100);
+  };
+  document.getElementById('closeDebt').onclick = () => document.getElementById('debtModal').classList.remove('show');
+  document.getElementById('debtModal').onclick = () => document.getElementById('debtModal').classList.remove('show');
+  document.getElementById('submitDebt').onclick = () => {
+    const v = parseInt(document.getElementById('debtInput').value, 10) || 0;
+    data.initialDebt = v;
+    saveData();
+    document.getElementById('debtModal').classList.remove('show');
+    render();
+  };
+
+  document.getElementById('cancelDel').onclick = () => {
+    pendingAction = null;
+    document.getElementById('confirmModal').classList.remove('show');
+  };
+  document.getElementById('confirmDel').onclick = () => {
+    if (pendingAction) {
+      if (pendingAction.type === 'task') { removeTask(pendingAction.id); saveData(); render(); }
+      else if (pendingAction.type === 'extra') { removeExtra(pendingAction.id); saveData(); render(); }
+      else if (pendingAction.type === 'report') {
+        data.reports = (data.reports || []).filter(r => r.weekKey !== pendingAction.id);
+        saveData();
+        renderReports();
+      }
+    }
+    pendingAction = null;
+    document.getElementById('confirmModal').classList.remove('show');
+  };
+  document.getElementById('confirmModal').onclick = () => {
+    pendingAction = null;
+    document.getElementById('confirmModal').classList.remove('show');
+  };
+
+  document.getElementById('reportBtn').onclick = async () => {
+    const text = buildReport();
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast('Отчет скопирован');
+    } catch(e) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); showToast('Отчет скопирован'); }
+      catch(e2) { prompt('Скопируй вручную:', text); }
+      document.body.removeChild(ta);
+    }
+  };
+
+  async function copyText(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast('Скопировано');
+    } catch(e) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); showToast('Скопировано'); }
+      catch(e2) {}
+      document.body.removeChild(ta);
+    }
+  }
+
+  function renderReports() {
+    const list = document.getElementById('reportsList');
+    list.innerHTML = '';
+    const reports = (data.reports || []).slice().sort((a, b) => b.weekKey.localeCompare(a.weekKey));
+
+    if (reports.length === 0) {
+      const empty = document.createElement('div');
+      empty.style.cssText = 'border-radius:24px;padding:40px 24px;text-align:center;background:#fbf6ec;border:1px dashed #e5d8c2;margin-top:8px;';
+      empty.innerHTML = '<div class="display" style="font-size:26px;margin-bottom:8px;">Пусто</div><div style="font-size:14px;line-height:1.5;color:#7a6b5a;">Отчеты появятся здесь<br>автоматически по окончании каждой недели</div>';
+      list.appendChild(empty);
+      return;
+    }
+
+    reports.forEach(rep => {
+      const card = document.createElement('div');
+      card.className = 'report-card';
+
+      const text = document.createElement('div');
+      text.className = 'report-text';
+      text.textContent = rep.text;
+      if (rep.edited) {
+        const mark = document.createElement('span');
+        mark.className = 'report-edited-mark';
+        mark.textContent = 'изменено';
+        text.appendChild(document.createElement('br'));
+        text.appendChild(mark);
+      }
+
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'report-copy';
+      copyBtn.textContent = '📋 Скопировать';
+      copyBtn.onclick = () => copyText(rep.text);
+
+      const actions = document.createElement('div');
+      actions.className = 'report-actions';
+      const editBtn = document.createElement('button');
+      editBtn.className = 'report-action-btn';
+      editBtn.textContent = '✏️ Изменить';
+      editBtn.onclick = () => openEditReport(rep.weekKey);
+      const delBtn = document.createElement('button');
+      delBtn.className = 'report-action-btn danger';
+      delBtn.textContent = '🗑 Удалить';
+      delBtn.onclick = () => askDelete('report', rep.weekKey, 'Удалить отчет?', 'Этот отчет будет удален из архива. Сами данные за неделю останутся.');
+      actions.appendChild(editBtn);
+      actions.appendChild(delBtn);
+
+      card.appendChild(text);
+      card.appendChild(copyBtn);
+      card.appendChild(actions);
+      list.appendChild(card);
+    });
+  }
+
+  function switchView(view) {
+    document.getElementById('viewMain').style.display = view === 'main' ? '' : 'none';
+    document.getElementById('viewReports').style.display = view === 'reports' ? '' : 'none';
+    document.getElementById('tabMain').classList.toggle('active', view === 'main');
+    document.getElementById('tabReports').classList.toggle('active', view === 'reports');
+    document.getElementById('reportBtn').style.display = view === 'main' ? '' : 'none';
+    window.scrollTo(0, 0);
+    if (view === 'reports') renderReports();
+  }
+
+  let editingReportKey = null;
+
+  function openEditReport(weekKey) {
+    const rep = (data.reports || []).find(r => r.weekKey === weekKey);
+    if (!rep) return;
+    editingReportKey = weekKey;
+    document.getElementById('editReportText').value = rep.text;
+    document.getElementById('editReportModal').classList.add('show');
+    setTimeout(() => document.getElementById('editReportText').focus(), 100);
+  }
+
+  function closeEditReport() {
+    editingReportKey = null;
+    document.getElementById('editReportModal').classList.remove('show');
+  }
+
+  document.getElementById('closeEditReport').onclick = closeEditReport;
+  document.getElementById('editReportModal').onclick = closeEditReport;
+  document.getElementById('resetReportText').onclick = () => {
+    if (!editingReportKey) return;
+    const monday = new Date(editingReportKey + 'T00:00:00');
+    document.getElementById('editReportText').value = buildReportFor(monday);
+  };
+  document.getElementById('saveEditReport').onclick = () => {
+    if (!editingReportKey) { closeEditReport(); return; }
+    const newText = document.getElementById('editReportText').value;
+    const rep = (data.reports || []).find(r => r.weekKey === editingReportKey);
+    if (rep) {
+      // Check if text differs from auto-generated version
+      const monday = new Date(editingReportKey + 'T00:00:00');
+      const autoText = buildReportFor(monday);
+      rep.text = newText;
+      rep.edited = newText.trim() !== autoText.trim();
+      saveData();
+      renderReports();
+    }
+    closeEditReport();
+  };
+
+  document.getElementById('tabMain').onclick = () => switchView('main');
+  document.getElementById('tabReports').onclick = () => switchView('reports');
+
+  renderIconGrid();
+  render();
+  loadData();
+</script>
+</body>
+</html>
